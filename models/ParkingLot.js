@@ -9,6 +9,9 @@ const ParkingLotSchema = new Schema({
         ref: 'User'
     },
     // Parking Lots details
+    Email: {
+        type: String
+    },
     Name: {
         type: String,
         required: true
