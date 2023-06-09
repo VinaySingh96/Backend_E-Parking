@@ -26,10 +26,10 @@ router.post('/bookSlot', fetchUser, async (req, res) => {
       return rand() + rand() + rand() + "-" + rand() + rand() + rand(); // to make it longer
     };
     const SlotBook = new SlotBooks({
-      provider: pl.user, renter: req.user.id,pl:pl._id, authToken: token()
+      provider: pl.user, renter: req.user.id, pl: pl._id, authToken: token()
     })
     const saveSlotBooks = await SlotBook.save();
-    const parkingLot = await ParkingLots.findByIdAndUpdate(pl._id, { $set: {TotalSlots:pl.TotalSlots-1} }, { new: true })
+    const parkingLot = await ParkingLots.findByIdAndUpdate(pl._id, { $set: { TotalSlots: pl.TotalSlots - 1 } }, { new: true })
     res.json(saveSlotBooks);
 
   } catch (error) {
@@ -50,10 +50,33 @@ router.post('/freeSlot', fetchUser, async (req, res) => {
       // console.log(error.array);
       return res.status(400).json({ errors: error.array });
     }
-    const pl=await ParkingLots.findById(data.pl);
-    const parkingLot = await ParkingLots.findByIdAndUpdate(data.pl, { $set: {TotalSlots:pl.TotalSlots+1} }, { new: true })
+    const pl = await ParkingLots.findById(data.pl);
+    const parkingLot = await ParkingLots.findByIdAndUpdate(data.pl, { $set: { TotalSlots: pl.TotalSlots + 1 } }, { new: true })
     const SlotBook = await SlotBooks.findByIdAndDelete(data._id);
-    res.status(200).json({Remark:"Freed successfully"});
+    res.status(200).json({ Remark: "Freed successfully" });
+
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Internal Server Error");
+  }
+})
+
+
+// Route 3: Get bookings by user as well as provider using POST : Login required
+router.post('/getBookings', fetchUser, async (req, res) => {
+  try {
+    let user = await Users.findById(req.user.id)
+    console.log("Getting all the bookings of ", user.name, " with body ", req.body)
+    const data = req.body; // destructuring from req.body
+
+    // res.send("ok");
+    const booking = await SlotBooks.find({ $or: [{ provider: req.user.id }, { renter: req.user.id }] });
+    // console.log(booking);
+    // if()
+    // const pl=await ParkingLots.findById(data.pl);
+    // const parkingLot = await ParkingLots.findByIdAndUpdate(data.pl, { $set: {TotalSlots:pl.TotalSlots+1} }, { new: true })
+    // const SlotBook = await SlotBooks.findByIdAndDelete(data._id);
+    res.status(200).json(booking);
 
   } catch (error) {
     console.error(error.message);
