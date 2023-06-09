@@ -4,7 +4,7 @@ let JWT_SECRET = "Smart Parking management -- Project";
 // takes access token from the header and provide the corresponding userid
 const fetchUser=(req,res,next)=>{
     const access_token=req.header('auth-token');
-    // console.log(access_token);
+    console.log(access_token);
 
     // if no access token in req
     if(!access_token)
@@ -14,7 +14,7 @@ const fetchUser=(req,res,next)=>{
     try{ 
         // verifing so that we get the data
         const data=jwt.verify(access_token, JWT_SECRET);
-        // console.log(data);
+        console.log(data);
         req.user=data.user;
         // the async(req,res) function after fetchUser runs when we call next();
         next();

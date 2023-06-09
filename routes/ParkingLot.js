@@ -8,11 +8,14 @@ const { body, validationResult } = require('express-validator');
 
 // Route 1: get all the ParkingLots of the user using GET: Login required, fetchUser is used as middleware so that it verifies the access token(id included) and in return gives the user of that id
 router.get('/fetchAllParkingLots', fetchUser, async (req, res) => {
-    const ParkingLots = await ParkingLots.find({ user: req.user.id })
-    res.json(ParkingLots);
+    const ParkingLot = await ParkingLots.find({ user: req.user.id,IsApproved:true })
+    res.json(ParkingLot);
 })
+
+
 // Route 2: Fetch all parking lot for admin.
 router.get('/fetchAllParkingLots_admin', async (req, res) => {
+    console.log("React Native")
     const allParkingLots = await ParkingLots.find({ IsApproved: true })
     res.json(allParkingLots);
 })
@@ -122,4 +125,9 @@ router.put('/updateSlot/:id', async (req, res) => {
     }
 })
 
+// Refresh for admin
+router.get('/admin_approve', async (req, res) => {
+    const allParkingLots = await ParkingLots.find({IsApproved:false});
+    return res.status(200).json({"Admin":"Admin","allParkingLots":allParkingLots});
+})
 module.exports = router;
