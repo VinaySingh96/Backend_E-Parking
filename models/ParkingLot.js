@@ -40,6 +40,10 @@ const ParkingLotSchema = new Schema({
         type: Boolean,
         default:false
     },
+    SlotArray:{
+        type:[Number],
+        required:true
+    },
     Status: {
         type: String,
         enum : ['DELETE','UPDATE','NEW'],

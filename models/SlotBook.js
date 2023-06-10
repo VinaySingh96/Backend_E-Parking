@@ -22,6 +22,10 @@ const SlotBookSchema = new Schema({
     type: String,
     required:true
   },
+  slotNo: {
+    type: Number,
+    required:true
+  },
   date: {
     type: Date,
     default: Date.now

@@ -8,7 +8,7 @@ const { body, validationResult } = require('express-validator');
 
 // Route 1: get all the ParkingLots of the user using GET: Login required, fetchUser is used as middleware so that it verifies the access token(id included) and in return gives the user of that id
 router.get('/fetchAllParkingLots', fetchUser, async (req, res) => {
-    const ParkingLot = await ParkingLots.find({ user: req.user.id,IsApproved:true })
+    const ParkingLot = await ParkingLots.find({ user: req.user.id, IsApproved: true })
     res.json(ParkingLot);
 })
 
@@ -30,8 +30,9 @@ router.post('/createParkingLot', fetchUser, async (req, res) => {
             // console.log(error.array);
             return res.status(400).json({ errors: error.array });
         }
+        const array = Array(TotalSlots).fill(1);
         const ParkingLot = new ParkingLots({
-            Name: Name, Email: user.email, WalletAddress: WalletAddress, Fee: Fee, TotalSlots: TotalSlots, Lattitude: Lattitude, Longitude: Longitude, user: req.user.id
+            Name: Name, Email: user.email, WalletAddress: WalletAddress, Fee: Fee, TotalSlots: TotalSlots, SlotArray: array, Lattitude: Lattitude, Longitude: Longitude, user: req.user.id
         })
         const saveParkingLots = await ParkingLot.save();
         res.json(saveParkingLots);
@@ -57,6 +58,7 @@ router.put('/updateParkingLot/:id', fetchUser, async (req, res) => {
     if (ParkingLot.user.toString() !== req.user.id) {
         return res.status(401).send("Not Allowed");
     }
+
     newParkingLot.IsApproved = false;
     newParkingLot.Status = "UPDATE";
     ParkingLot = await ParkingLots.findByIdAndUpdate(req.params.id, { $set: newParkingLot }, { new: true })
@@ -87,7 +89,7 @@ router.post('/approvePL_admin/:id', async (req, res) => {
         console.log("Admin :: Approved -- CREATE the parking lot with id : ", req.params.id)
         try {
             ParkingLot = await ParkingLots.findByIdAndUpdate(req.params.id, { $set: { IsApproved: true } }, { new: true })
-            res.status(200).send({Remark:"Updated successfully"})
+            res.status(200).send({ Remark: "Updated successfully" })
         } catch (err) {
             res.status(500).send({ 'error': err });
         }
@@ -96,7 +98,7 @@ router.post('/approvePL_admin/:id', async (req, res) => {
         console.log("Admin :: Approved -- UPDATE the parking lot with id : ", req.params.id)
         try {
             ParkingLot = await ParkingLots.findByIdAndUpdate(req.params.id, { $set: { IsApproved: true, Status: "NEW" } }, { new: true })
-            res.status(200).send({Remark:"Updated successfully"})
+            res.status(200).send({ Remark: "Updated successfully" })
         } catch (err) {
             res.status(500).send({ 'error': err });
         }
@@ -105,7 +107,7 @@ router.post('/approvePL_admin/:id', async (req, res) => {
         console.log("Admin :: Approved -- DELETE the parking lot with id : ", req.params.id)
         try {
             ParkingLot = await ParkingLots.findByIdAndDelete(req.params.id)
-            res.status(200).send({Remark:"Updated successfully"})
+            res.status(200).send({ Remark: "Updated successfully" })
         } catch (err) {
             res.status(500).send({ 'error': err });
         }
@@ -127,7 +129,7 @@ router.put('/updateSlot/:id', async (req, res) => {
 
 // Refresh for admin
 router.get('/admin_approve', async (req, res) => {
-    const allParkingLots = await ParkingLots.find({IsApproved:false});
-    return res.status(200).json({"Admin":"Admin","allParkingLots":allParkingLots});
+    const allParkingLots = await ParkingLots.find({ IsApproved: false });
+    return res.status(200).json({ "Admin": "Admin", "allParkingLots": allParkingLots });
 })
 module.exports = router;

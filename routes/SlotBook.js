@@ -19,17 +19,28 @@ router.post('/bookSlot', fetchUser, async (req, res) => {
       return res.status(400).json({ errors: error.array });
     }
     var rand = function () {
-      return Math.random().toString(10).substr(2); // remove `0.`
+      return Math.random().toString(36).substr(2); // remove `0.`
     };
 
     var token = function () {
-      return rand() + rand() + rand() + "-" + rand() + rand() + rand(); // to make it longer
+      return rand()  + rand() + "-" + rand() + rand() ; // to make it longer
     };
+    // finding a free slot i.e [1,0,1,0] from slotarray
+    let slotarr=pl.SlotArray,freeSlot;
+    for(let i=0;i<slotarr.length;i++){
+      if(slotarr[i]==1){
+        freeSlot=i;
+        break;
+      }
+    }
     const SlotBook = new SlotBooks({
-      provider: pl.user, renter: req.user.id, pl: pl._id, authToken: token()
+      provider: pl.user, renter: req.user.id, pl: pl._id, authToken: token(),slotNo:freeSlot
     })
     const saveSlotBooks = await SlotBook.save();
-    const parkingLot = await ParkingLots.findByIdAndUpdate(pl._id, { $set: { TotalSlots: pl.TotalSlots - 1 } }, { new: true })
+
+    const newSlotArray=pl.SlotArray;
+    newSlotArray[freeSlot]=0;
+    const parkingLot = await ParkingLots.findByIdAndUpdate(pl._id, { $set: { TotalSlots: pl.TotalSlots - 1,SlotArray:newSlotArray } }, { new: true })
     res.json(saveSlotBooks);
 
   } catch (error) {
@@ -51,7 +62,9 @@ router.post('/freeSlot', fetchUser, async (req, res) => {
       return res.status(400).json({ errors: error.array });
     }
     const pl = await ParkingLots.findById(data.pl);
-    const parkingLot = await ParkingLots.findByIdAndUpdate(data.pl, { $set: { TotalSlots: pl.TotalSlots + 1 } }, { new: true })
+    const newSlotArray=pl.SlotArray;
+    newSlotArray[data.slotNo]=1;
+    const parkingLot = await ParkingLots.findByIdAndUpdate(data.pl, { $set: { TotalSlots: pl.TotalSlots + 1,SlotArray:newSlotArray } }, { new: true })
     const SlotBook = await SlotBooks.findByIdAndDelete(data._id);
     res.status(200).json({ Remark: "Freed successfully" });
 
