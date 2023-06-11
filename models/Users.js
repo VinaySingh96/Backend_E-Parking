@@ -24,6 +24,6 @@ const UserSchema = new Schema({
 })
 
 const User = mongoose.model('User', UserSchema);
-User.createIndexes();// for same email id does not create a user
+// User.createIndexes();// for same email id does not create a user
 
 module.exports = User;

@@ -1,12 +1,16 @@
 const mongoose = require('mongoose');
 
 // connection string
-const mongoURI = "mongodb://localhost:27017/db3?readPreference=primary&appname=MongoDB%20Compass&ssl=false";
+const mongoURI = `mongodb+srv://vikashdubeyup121:8EnEWJmvCkNpsAJ1@collegeproject.zobq5zn.mongodb.net/?retryWrites=true&w=majority`;
 
 const connectToMongoose = () => {
-    mongoose.connect(mongoURI, () => {
-        console.log("connected to mongoose successfully");
-    })
+    mongoose.connect(mongoURI).then(() => {
+            console.log('Connected to MongoDB Atlas');
+            // Your code logic here
+        })
+        .catch((error) => {
+            console.error('Error connecting to MongoDB Atlas:', error);
+        });
 }
 
 module.exports = connectToMongoose;
