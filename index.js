@@ -8,7 +8,7 @@ connectToMongoose();
 const app = expresss();
 const port = 8000;
 app.use(cors())
-const hostname = 'localhost';
+const hostname = '0.0.0.0';
 app.use(expresss.json());
 
 // Available Routes -- use this type of endpoint for better readability
