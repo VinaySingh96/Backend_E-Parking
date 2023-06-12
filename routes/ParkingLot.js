@@ -30,7 +30,7 @@ router.post('/createParkingLot', fetchUser, async (req, res) => {
             // console.log(error.array);
             return res.status(400).json({ errors: error.array });
         }
-        const array = Array(TotalSlots).fill(1);
+        const array = Array(parseInt(TotalSlots)).fill(1);
         const ParkingLot = new ParkingLots({
             Name: Name, Email: user.email, WalletAddress: WalletAddress, Fee: Fee, TotalSlots: TotalSlots, SlotArray: array, Lattitude: Lattitude, Longitude: Longitude, user: req.user.id
         })
